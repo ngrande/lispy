@@ -45,6 +45,16 @@
   (make-cd
 	(prompt-read "Title")
 	(prompt-read "Artist")
-	(prompt-read "Rating")
-	(prompt-read "Ripped [y/n]")))
+	; if it can not parse the input to an int it will return NIL
+	; without ":junk-allowed" it would signal an error 
+	; ":junk-allowed" is an optional keyword
+	(or (parse-integer (prompt-read "Rating") :junk-allowed t) 0) ; or = will take the prompt input OR 0 if prompt is NIL (not parsable)
+	; y-or-n-p is built-in ... how handy
+	(y-or-n-p "Ripped: ")))
+
+(defun add-cds ()
+  ; loop till return
+  (loop (add-record (prompt-for-cd))
+		; if n => return out of loop
+		(if (not (y-or-n-p "Another?: ")) (return))))
 
