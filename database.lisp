@@ -58,3 +58,24 @@
 		; if n => return out of loop
 		(if (not (y-or-n-p "Another?: ")) (return))))
 
+; save db to disk
+(defun save-db (filename)
+  ; open a file and bind stream to "out" variable
+  ; filename is the path to the file
+  ; :direction :output => write to file
+  ; :if-exists :supersede => override existing file
+  (with-open-file (out filename :direction :output :if-exists :supersede)
+	; ensure that certain variables that affect the behavior of print are set to their standard values
+	(with-standard-io-syntax
+	  ; output *db* in a form which LISP can also read back
+	  (print *db* out))))
+
+; load db (file) back to lisp
+(defun load-db (filename)
+  ; default :direction is :input
+  (with-open-file (in filename)
+	; read with same basic syntax our save-db function was using
+	(with-standard-io-syntax
+	  ; read => same reader as used by REPL
+	  ; setf => assignment operator; set first arg to the result of evaluating the second arg
+	  (setf *db* (read in)))))
