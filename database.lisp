@@ -79,3 +79,44 @@
 	  ; read => same reader as used by REPL
 	  ; setf => assignment operator; set first arg to the result of evaluating the second arg
 	  (setf *db* (read in)))))
+
+
+; filter list (search for artist)
+;(defun select-by-artist (artist)
+  ;; filter list (create new list)
+  ;(remove-if-not
+	;; anon function (lambda) are specified by name "lambda" - syntax is equal to defun
+	;; with "#" you specify to refer to a function and not the value of a variable
+	;#'(lambda (cd) (equal artist (getf cd :artist)))' *db* ))
+
+; pass a function to select
+; a more general function to replace "select-by-artist"
+(defun select (selector-fn)
+  ; filter with selector-fn
+  (remove-if-not selector-fn *db*))
+
+; return lambda function to select the artist
+(defun artist-selector (artist)
+  #'(lambda (cd) (equal (getf cd :artist) artist)))
+
+; an even more general approach for selectors
+; using keyword parameters
+;
+; (ripped nil ripped-p)
+; -> nil is the default
+; ripped-p is a flag which indicates if the NIL is from the USER or default
+(defun where (&key title artist rating (ripped nil ripped-p))
+  #'(lambda (cd)
+	  (and
+		(if title (equal (getf cd :title) title) t)
+		(if artist (equal (getf cd :artist) artist) t)
+		(if rating (equal (getf cd :rating) rating) t)
+		(if ripped-p (equal (getf cd :ripped) ripped) t))))
+
+; example usage
+;(select (where :artist "Ich"))
+; or
+;(select (where :rating 11))
+; or
+;(select (where :artist "Ich" :ripped nil))
+
