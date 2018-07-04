@@ -114,9 +114,24 @@
 		(if ripped-p (equal (getf cd :ripped) ripped) t))))
 
 ; example usage
-;(select (where :artist "Ich"))
+; (select (where :artist "Ich"))
 ; or
-;(select (where :rating 11))
+; (select (where :rating 11))
 ; or
-;(select (where :artist "Ich" :ripped nil))
+; (select (where :artist "Ich" :ripped nil))
 
+
+; update entries in the database
+(defun update (selector-fn &key title artist rating (ripped nil ripped-p))
+  (setf *db*
+		(mapcar
+		  #'(lambda (row)
+			  (when (funcall selector-fn row)
+				(if title (setf (getf row :title) title))
+				(if artist (setf (getf row :artist) artist))
+				(if rating (setf (getf row :rating) rating))
+				(if ripped-p (setf (getf row :ripped) ripped)))
+			  row) *db*)))
+
+; example usage
+; (update (where :artist "Ich") :rating 11)
