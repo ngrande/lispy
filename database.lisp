@@ -135,3 +135,11 @@
 
 ; example usage
 ; (update (where :artist "Ich") :rating 11)
+
+
+; delete function
+(defun delete-rows (selector-fn)
+  (setf *db* (remove-if selector-fn *db*)))
+
+; example usage
+; (delete-rows (where :artist "Ich"))
