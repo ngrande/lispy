@@ -143,3 +143,6 @@
 
 ; example usage
 ; (delete-rows (where :artist "Ich"))
+
+
+; PDF page 34 (So let's write a function that, given [...])
