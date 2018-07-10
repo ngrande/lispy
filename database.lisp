@@ -146,3 +146,40 @@
 
 
 ; PDF page 34 (So let's write a function that, given [...])
+
+; generate a comparison function
+(defun make-comparison-expr (field value)
+  ; create a list with the statement
+  ; put a back quote (`) in front of the expression to avoid evaluation (except comma (,) preceeded expressions which are evaluated in place
+  `(equal (getf cd ,field) ,value))
+
+; create list of comparison expressions
+(defun make-comparison-list (fields)
+  ; loop over list of fields
+  (loop while fields
+		; pop 2 items at a time
+		; #1: field name
+		; #2: field value (compare)
+		collecting (make-comparison-expr (pop fields) (pop fields))))
+
+; define a macro
+; &rest -> take an arbitrary number of arguments (as a list named clauses)
+(defmacro where (&rest clauses)
+  ; back quote to not evaluate the lambda yet
+  ; lambda function for later use
+  ; ,@ splices the value of the following expression (evaluates to a list)#
+  ; @ is like "unpacking": `(and ,@(list 1 2 3) 4) -> (and 1 2 3 4)
+  `#'(lambda (cd) (and ,@(make-comparison-list clauses))))
+
+; example usage
+; (where :title "Hello" :artist "Adele" :rating 11)
+
+; to see what the macro generates one can use MACROEXPAND-1
+; (macroexpand-1 '(where :rating 1 :title "hello"))
+; =>
+; #'(LAMBDA (CD) (AND (EQUAL (GETF CD :RATING) 1) (EQUAL (GETF CD :TITLE) "hello")))
+
+; example usage of select + where macro
+; (select (where :artist "Ich" :ripped t))
+
+; chapter 37 Syntax and Semantics
